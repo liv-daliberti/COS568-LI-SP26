@@ -1,0 +1,19 @@
+\begin{table}[h]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrr}
+\toprule
+Workload & Index & Throughput (Mops/s) & Size (GiB) & Search & Flush \\
+\midrule
+Mixed (90% Lookup / 10% Insert) & Dynamic PGM & 1.051 & 1.588 & BinarySearch / 64 & - \\
+ & LIPP & 15.648 & 11.829 & - & - \\
+ & Hybrid & 1.757 & 11.829 & BinarySearch / 64 & 25000 \\
+\addlinespace
+Mixed (10% Lookup / 90% Insert) & Dynamic PGM & 3.514 & 1.586 & BinarySearch / 128 & - \\
+ & LIPP & 3.246 & 11.787 & - & - \\
+ & Hybrid & 1.946 & 11.769 & BinarySearch / 128 & 500000 \\
+\bottomrule
+\end{tabular}
+\caption{Best mean-performing configuration per index for the reported Facebook mixed workloads. Dynamic PGM and the hybrid are selected after averaging three repeats and sweeping their candidate hyperparameters.}
+\end{table}

@@ -1,0 +1,58 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\title{COS568 Learned Index\\Milestone 2 Report}
+\author{Liv d'Aliberti}
+\date{\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section*{Setup}
+
+\paragraph{Workflow.}
+I set up a dedicated workflow that mirrors Part~1: dataset check/download, workload generation, benchmark build, mixed-workload benchmarking, plot generation, and PDF report assembly. Each benchmark configuration is repeated three times (\texttt{-r 3}), and the reporting scripts choose the row with the highest mean mixed-workload throughput for each index and workload. The Slurm pipeline remains the default reproducible path, and the Facebook report artifacts below were generated with the same scripts and repository \texttt{.venv} while the queued cluster job was still pending on resources.
+
+\paragraph{Hybrid Designs.}
+I implemented two hybrid variants. The required baseline is \texttt{HybridPGMLIPP}, a naive synchronous design: the bulk-loaded base keys go into LIPP, incoming inserts go into a Dynamic PGM buffer, lookups probe the buffer first and then fall back to LIPP, and the buffered keys are flushed into LIPP once the buffer reaches a configured threshold. I also implemented \texttt{HybridPGMLIPPIncremental}, a less naive incremental-draining design that rotates a full Dynamic PGM buffer into a draining state, keeps a fresh Dynamic PGM buffer available for new inserts, and migrates a bounded number of keys from the draining buffer into LIPP on subsequent insert operations.
+
+\paragraph{Hyperparameter Sweep.}
+For Facebook, I sweep Dynamic PGM's internal search/error setting as well as each hybrid's migration controls. \texttt{HybridPGMLIPP} sweeps flush thresholds of \texttt{25000/50000/100000} for the lookup-heavy workload and \texttt{100000/250000/500000} for the insertion-heavy workload. \texttt{HybridPGMLIPPIncremental} uses the same threshold family and additionally sweeps a bounded migration budget per insert, using smaller budgets for the lookup-heavy case and larger budgets for the insertion-heavy case.
+
+\paragraph{Scope.}
+The pipeline supports Facebook, Books, and OSMC for both mixed workloads. The required milestone report below presents Facebook, and the second page adds a supplemental Facebook-only comparison between \texttt{HybridPGMLIPP} and \texttt{HybridPGMLIPPIncremental}.
+
+\section*{Results}
+
+\input{milestone2_summary_table.tex}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{milestone2_metrics.png}
+\caption{Facebook Milestone 2 results. The top row reports throughput and index size for the lookup-heavy mixed workload (90\% lookup, 10\% insertion). The bottom row reports the same metrics for the insertion-heavy mixed workload (10\% lookup, 90\% insertion). Each bar uses the best mean-performing configuration from the three-repeat sweep for that index and workload.}
+\end{figure}
+
+\paragraph{Takeaway.}
+The required checkpoint comparison uses the best Facebook configuration for Dynamic PGM, LIPP, and the naive hybrid. On this dataset, LIPP remains strongest for the lookup-heavy mixed workload, Dynamic PGM remains strongest for the insertion-heavy mixed workload, and the naive hybrid sits between them while preserving the required combined design.
+
+\clearpage
+\section*{Supplemental Hybrid Sweep}
+
+\paragraph{Additional Approach.}
+The second approach added beyond the milestone baseline is \texttt{HybridPGMLIPPIncremental}. This section compares the best Facebook configuration of \texttt{HybridPGMLIPP} against the best Facebook configuration of \texttt{HybridPGMLIPPIncremental} under the same mixed workloads.
+
+\input{milestone2_hybrid_summary_table.tex}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.94\textwidth]{milestone2_hybrid_comparison_fb.png}
+\caption{Supplemental Facebook comparison between \texttt{HybridPGMLIPP} and \texttt{HybridPGMLIPPIncremental}. For each workload, the plotted bars use the best mean-performing configuration found in the corresponding hyperparameter sweep.}
+\end{figure}
+
+\paragraph{Hybrid Observation.}
+\texttt{HybridPGMLIPPIncremental} is a more realistic migration policy because it avoids a single large synchronous flush and instead amortizes migration over future insertions. In the Facebook experiments here, however, its best configuration still trails the best \texttt{HybridPGMLIPP} configuration for both mixed workloads. The supplemental sweep is still useful because it shows that migration budget and flush threshold materially affect performance, and it provides a second named hybrid design to build on for the final Task~2 experiments.
+
+\end{document}

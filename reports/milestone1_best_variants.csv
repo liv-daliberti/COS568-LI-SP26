@@ -1,0 +1,28 @@
+dataset,dataset_label,workload,index_name,index_label,avg_mops,search_method,value
+fb,Facebook,lookup_only,BTree,B+Tree,1.96724,LinearSearch,8.0
+fb,Facebook,lookup_only,DynamicPGM,Dynamic PGM,2.57915,LinearSearch,16.0
+fb,Facebook,lookup_only,LIPP,LIPP,419.26399999999995,,
+fb,Facebook,insert_lookup_insert,BTree,B+Tree,1.2197966666666666,LinearSearch,8.0
+fb,Facebook,insert_lookup_insert,DynamicPGM,Dynamic PGM,7.75019,ExponentialSearch,256.0
+fb,Facebook,insert_lookup_insert,LIPP,LIPP,3.0717499999999998,,
+fb,Facebook,insert_lookup_lookup,BTree,B+Tree,1.79334,LinearSearch,8.0
+fb,Facebook,insert_lookup_lookup,DynamicPGM,Dynamic PGM,0.6157906666666667,BinarySearch,512.0
+fb,Facebook,insert_lookup_lookup,LIPP,LIPP,432.3246666666667,,
+books,Books,lookup_only,BTree,B+Tree,1.9468833333333333,LinearSearch,8.0
+books,Books,lookup_only,DynamicPGM,Dynamic PGM,2.6816033333333333,LinearSearch,16.0
+books,Books,lookup_only,LIPP,LIPP,426.68833333333333,,
+books,Books,insert_lookup_insert,BTree,B+Tree,1.2187566666666667,LinearSearch,8.0
+books,Books,insert_lookup_insert,DynamicPGM,Dynamic PGM,7.52499,InterpolationSearch,128.0
+books,Books,insert_lookup_insert,LIPP,LIPP,3.8673933333333337,,
+books,Books,insert_lookup_lookup,BTree,B+Tree,1.7954466666666666,LinearSearch,8.0
+books,Books,insert_lookup_lookup,DynamicPGM,Dynamic PGM,0.6673556666666666,InterpolationSearch,512.0
+books,Books,insert_lookup_lookup,LIPP,LIPP,437.8016666666667,,
+osmc,OSMC,lookup_only,BTree,B+Tree,2.4253199999999997,LinearSearch,8.0
+osmc,OSMC,lookup_only,DynamicPGM,Dynamic PGM,2.5847833333333337,LinearSearch,16.0
+osmc,OSMC,lookup_only,LIPP,LIPP,424.154,,
+osmc,OSMC,insert_lookup_insert,BTree,B+Tree,1.2148466666666666,LinearSearch,8.0
+osmc,OSMC,insert_lookup_insert,DynamicPGM,Dynamic PGM,6.687903333333334,BinarySearch,1024.0
+osmc,OSMC,insert_lookup_insert,LIPP,LIPP,2.33905,,
+osmc,OSMC,insert_lookup_lookup,BTree,B+Tree,2.2433899999999998,LinearSearch,8.0
+osmc,OSMC,insert_lookup_lookup,DynamicPGM,Dynamic PGM,0.6127203333333333,BinarySearch,1024.0
+osmc,OSMC,insert_lookup_lookup,LIPP,LIPP,433.21166666666664,,

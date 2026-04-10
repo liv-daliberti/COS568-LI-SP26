@@ -37,7 +37,7 @@ echo "Build successful! Binary created at: $(pwd)/benchmark"
 
 # Verify the binary doesn't include unwanted index implementations
 # Use more specific patterns to avoid false positives
-echo "Verifying that the binary contains only DynamicPGM, B+Tree implementations..."
+echo "Verifying that the binary contains only the milestone benchmark implementations..."
 UNWANTED_REFERENCES=$(nm benchmark | grep -E "benchmark_64_rmi|benchmark_64_art|benchmark_64_alex|benchmark_64_mabtree|benchmark_64_wormhole|benchmark_64_fast|benchmark_64_finedex|benchmark_64_xindex")
 
 if [ -z "$UNWANTED_REFERENCES" ]; then
@@ -48,4 +48,4 @@ else
     exit 1
 fi
 
-echo "Minimal benchmark binary is ready for DynamicPGM, B+Tree and LIPP benchmarking!"
+echo "Minimal benchmark binary is ready for DynamicPGM, HybridPGMLIPP, B+Tree and LIPP benchmarking!"

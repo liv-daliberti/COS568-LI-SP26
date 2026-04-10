@@ -1,0 +1,9 @@
+workload,workload_label,index_name,index_label,avg_mops,index_size_bytes,index_size_gib,search_method,value,flush_threshold,drain_budget,config_label
+mix_10_insert,Mixed (90% Lookup / 10% Insert),HybridPGMLIPP,"Naive Hybrid
+(HybridPGMLIPP)",2.8299333333333334,12700947800,11.828679405152798,BinarySearch,128.0,25000,,BinarySearch / 128 / flush=25000
+mix_10_insert,Mixed (90% Lookup / 10% Insert),HybridPGMLIPPIncremental,"Incremental Hybrid
+(HybridPGMLIPPIncremental)",1.60889,12699320728,11.827164076268673,BinarySearch,64.0,25000,256,BinarySearch / 64 / flush=25000 / budget=256
+mix_90_insert,Mixed (10% Lookup / 90% Insert),HybridPGMLIPP,"Naive Hybrid
+(HybridPGMLIPP)",2.0414266666666667,12637142592,11.769256174564362,BinarySearch,512.0,500000,,BinarySearch / 512 / flush=500000
+mix_90_insert,Mixed (10% Lookup / 90% Insert),HybridPGMLIPPIncremental,"Incremental Hybrid
+(HybridPGMLIPPIncremental)",1.8018466666666668,12637142592,11.769256174564362,BinarySearch,512.0,500000,1024,BinarySearch / 512 / flush=500000 / budget=1024

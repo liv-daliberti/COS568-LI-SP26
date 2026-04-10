@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.2in}p{1.0in}p{2.2in}}
+\toprule
+Workload & Hybrid & Best Configuration \\
+\midrule
+Mixed (90% Lookup / 10% Insert) & Naive: 2.830 Mops/s & BinarySearch / 128 / flush=25000 \\
+ & Incremental: 1.609 Mops/s & BinarySearch / 64 / flush=25000 / budget=256 \\
+\addlinespace
+Mixed (10% Lookup / 90% Insert) & Naive: 2.041 Mops/s & BinarySearch / 512 / flush=500000 \\
+ & Incremental: 1.802 Mops/s & BinarySearch / 512 / flush=500000 / budget=1024 \\
+\bottomrule
+\end{tabular}
+\caption{Best Facebook configurations from the supplemental hybrid-only sweep. The incremental hybrid adds a bounded per-insert migration budget in addition to the flush threshold.}
+\end{table}

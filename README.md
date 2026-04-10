@@ -14,6 +14,10 @@ We will provide you with the implementations of Dynamic PGM, B+tree and LIPP in 
 
 **Note: You are allowed and encouraged to use LLMs for coding, but please do not plagiarize others' work.**
 
+## Repository Note
+
+Large datasets and generated experiment artifacts are intentionally not versioned in this repository. After cloning, download datasets with `scripts/download_dataset.sh` and regenerate workloads/results locally as needed.
+
 
 # Overview
 
