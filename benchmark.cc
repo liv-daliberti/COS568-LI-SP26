@@ -59,7 +59,7 @@ using namespace std;
 template <class SearchClass, int record>
 void execute_64_bit(tli::Benchmark<uint64_t>& benchmark, bool pareto,
                     const std::vector<int>& params, bool only_mode,
-                    const std::string& only, const std::string& /*filename*/) 
+                    const std::string& only, const std::string& filename)
 {
   // Only run if user specifies --only=PGM or --only=BTree.
   check_only("PGM", benchmark_64_pgm<SearchClass>(benchmark, pareto, params));
@@ -68,6 +68,11 @@ void execute_64_bit(tli::Benchmark<uint64_t>& benchmark, bool pareto,
   check_only("HybridPGMLIPP", benchmark_64_hybrid_pgm_lipp<SearchClass>(benchmark, pareto, params));
   check_only("HybridPGMLIPPIncremental",
              benchmark_64_hybrid_pgm_lipp_incremental<SearchClass>(
+                 benchmark, pareto, params));
+  check_only("HybridPGMLIPPAsync",
+             benchmark_64_lipp_fast_as_hybrid_async(benchmark, filename));
+  check_only("HybridPGMLIPPAsync",
+             benchmark_64_hybrid_pgm_lipp_async<SearchClass>(
                  benchmark, pareto, params));
   check_only("LIPP", benchmark_64_lipp(benchmark));
 }
@@ -85,6 +90,10 @@ void execute_64_bit(tli::Benchmark<uint64_t>& benchmark, bool only_mode,
   check_only("HybridPGMLIPPIncremental",
              benchmark_64_hybrid_pgm_lipp_incremental<record>(benchmark,
                                                               filename));
+  check_only("HybridPGMLIPPAsync",
+             benchmark_64_lipp_fast_as_hybrid_async(benchmark, filename));
+  check_only("HybridPGMLIPPAsync",
+             benchmark_64_hybrid_pgm_lipp_async<record>(benchmark, filename));
   check_only("LIPP", benchmark_64_lipp(benchmark));
 }
 

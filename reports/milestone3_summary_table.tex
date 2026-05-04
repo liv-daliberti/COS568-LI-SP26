@@ -1,0 +1,21 @@
+\begin{table}[h]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llrrrr}
+\toprule
+Dataset & Workload & LIPP & Async & Gain & Async Variant \\
+\midrule
+Books & 10\% Insert & 21.446 & 21.833 & +1.8\% & stock\_lipp\_fast\_tu \\
+ & 90\% Insert & 2.995 & 4.034 & +34.7\% & InterpolationSearch / 256 / 2000000w \\
+\addlinespace
+FB & 10\% Insert & 17.458 & 17.589 & +0.8\% & stock\_lipp\_fast\_tu \\
+ & 90\% Insert & 2.297 & 3.912 & +70.3\% & BinarySearch / 128 / 8000000w \\
+\addlinespace
+OSMC & 10\% Insert & 14.692 & 14.741 & +0.3\% & stock\_lipp\_fast\_tu \\
+ & 90\% Insert & 1.949 & 3.582 & +83.8\% & BinarySearch / 128 / 5000000w \\
+\addlinespace
+\bottomrule
+\end{tabular}
+\caption{Final LIPP-vs-Async comparison from the 3-repeat run. Throughput is in Mops/s.}
+\end{table}

@@ -63,6 +63,8 @@ class LIPP
 
     const double BUILD_LR_REMAIN;
     const bool QUIET;
+    const int REBUILD_SIZE_FACTOR;
+    const int REBUILD_COLLISION_INV;
 
     struct {
         long long fmcd_success_times = 0;
@@ -76,8 +78,11 @@ class LIPP
 public:
     typedef std::pair<T, P> V;
 
-    LIPP(double BUILD_LR_REMAIN = 0, bool QUIET = true)
-        : BUILD_LR_REMAIN(BUILD_LR_REMAIN), QUIET(QUIET) {
+    LIPP(double BUILD_LR_REMAIN = 0, bool QUIET = true,
+         int REBUILD_SIZE_FACTOR = 4, int REBUILD_COLLISION_INV = 10)
+        : BUILD_LR_REMAIN(BUILD_LR_REMAIN), QUIET(QUIET),
+          REBUILD_SIZE_FACTOR(REBUILD_SIZE_FACTOR),
+          REBUILD_COLLISION_INV(REBUILD_COLLISION_INV) {
         // Ban initial memory pool.
         // {
         //     std::vector<Node*> nodes;
@@ -833,7 +838,12 @@ private:
             Node* node = path[i];
             const int num_inserts = node->num_inserts;
             const int num_insert_to_data = node->num_insert_to_data;
-            const bool need_rebuild = node->fixed == 0 && node->size >= node->build_size * 4 && node->size >= 64 && num_insert_to_data * 10 >= num_inserts;
+            const bool need_rebuild =
+                node->fixed == 0 &&
+                static_cast<long long>(node->size) >=
+                    static_cast<long long>(node->build_size) * REBUILD_SIZE_FACTOR &&
+                node->size >= 64 &&
+                num_insert_to_data * REBUILD_COLLISION_INV >= num_inserts;
 
             if (need_rebuild) {
                 const int ESIZE = node->size;
@@ -891,6 +901,67 @@ public:
                     return true;
                 }
                 return false;
+            }
+        }
+    }
+
+    P find_value_or(const T& key, const P& not_found) const {
+        Node* node = root;
+
+        while (true) {
+            int pos = PREDICT_POS(node, key);
+            if (BITMAP_GET(node->child_bitmap, pos) == 1) {
+                node = node->items[pos].comp.child;
+            } else {
+                if (BITMAP_GET(node->none_bitmap, pos) == 0 &&
+                    node->items[pos].comp.data.key == key) {
+                    return node->items[pos].comp.data.value;
+                }
+                return not_found;
+            }
+        }
+    }
+
+    inline __attribute__((always_inline)) P find_value_or_fast(
+            const T& key, const P& not_found) const {
+        Node* node = root;
+
+        while (true) {
+            int pos = PREDICT_POS(node, key);
+            const size_t bitmap_pos = static_cast<size_t>(pos) / BITMAP_WIDTH;
+            const bitmap_t mask =
+                static_cast<bitmap_t>(1u << (static_cast<size_t>(pos) % BITMAP_WIDTH));
+            if ((node->child_bitmap[bitmap_pos] & mask) != 0) {
+                node = node->items[pos].comp.child;
+            } else {
+                if ((node->none_bitmap[bitmap_pos] & mask) == 0 &&
+                    node->items[pos].comp.data.key == key) {
+                    return node->items[pos].comp.data.value;
+                }
+                return not_found;
+            }
+        }
+    }
+
+    template <bool ChildLikely>
+    inline __attribute__((always_inline)) P find_value_or_fast_hint(
+            const T& key, const P& not_found) const {
+        Node* node = root;
+
+        while (true) {
+            int pos = PREDICT_POS(node, key);
+            const size_t bitmap_pos = static_cast<size_t>(pos) / BITMAP_WIDTH;
+            const bitmap_t mask =
+                static_cast<bitmap_t>(1u << (static_cast<size_t>(pos) % BITMAP_WIDTH));
+            const bool has_child = (node->child_bitmap[bitmap_pos] & mask) != 0;
+            if (__builtin_expect(has_child, ChildLikely ? 1 : 0)) {
+                node = node->items[pos].comp.child;
+            } else {
+                if ((node->none_bitmap[bitmap_pos] & mask) == 0 &&
+                    node->items[pos].comp.data.key == key) {
+                    return node->items[pos].comp.data.value;
+                }
+                return not_found;
             }
         }
     }

@@ -7,19 +7,22 @@ if [ ! -f CMakeLists.txt ]; then
     exit 1
 fi
 
-echo "Creating and entering build directory..."
-mkdir -p build
-cd build
+BUILD_DIR="${BUILD_DIR:-build}"
+
+echo "Creating and entering build directory: ${BUILD_DIR}"
+mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
 
 echo "Configuring build..."
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 if [ $? -ne 0 ]; then
     echo "Error: CMake configuration failed"
     exit 1
 fi
 
 echo "Building benchmark..."
-make
+BUILD_JOBS="${MILESTONE3_BUILD_JOBS:-${SLURM_CPUS_PER_TASK:-$(nproc)}}"
+make -j "$BUILD_JOBS"
 BUILD_RESULT=$?
 
 if [ $BUILD_RESULT -ne 0 ]; then
